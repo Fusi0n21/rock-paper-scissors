@@ -1,64 +1,142 @@
-let playerSelection
-let playerwins = 0
-let pcwins = 0
-let draws = 0
-let computerSelection
+
+const buttons = document.querySelectorAll('button');
+const div = document.createElement('div')
+const resultDiv = document.querySelector('.results')
+
+let playerChoice
+let computerChoice
+
+let playerPoints = 0
+let computerPoints = 0
+const playerPointsDiv = document.querySelector('.playerScore')
+const computerPointsDiv = document.querySelector('.computerScore')
+
+function updatePoints(){
+    playerPointsDiv.textContent = playerPoints
+    computerPointsDiv.textContent = computerPoints
+    checkIfFinished()
+}
+
+
+buttons.forEach((button) => {
+
+  button.addEventListener('click', function(e){
+    playerChoice = e.target.innerText
+    playGame(playerChoice)
+  });
+});
+
+
+
+
+
+function playGame(playerChoice){
+    if(playerPoints <5 && computerPoints <5){
+        getComputerChoice()
+        if(playerChoice === computerChoice) {
+            showResult(playerChoice, computerChoice, 'draw')
+        }
+        else if ((playerChoice === 'Rock' && computerChoice === 'Scissors') ||
+                (playerChoice === 'Scissors' && computerChoice === 'Paper') || 
+                (playerChoice === 'Paper' && computerChoice === 'Rock')){
+                    showResult(playerChoice, computerChoice, 'win')
+                }
+        else{
+            showResult(playerChoice, computerChoice, 'lost')
+        }
+    }
+}
+
+
+
 function getComputerChoice(){
-    let a = Math.floor(Math.random() * 3)
-    switch(a){
+    let computerChoiceNumber = Math.floor(Math.random() * 3)
+
+    switch(computerChoiceNumber){
         case 0:
-            return('rock')
+            computerChoice = "Rock"
             break
         case 1:
-            return('paper') 
+            computerChoice = "Paper"
             break
         case 2:
-            return('scissors')   
+            computerChoice = "Scissors"
             break
     }
 }
 
+function showResult(playerChoice, computerChoice, result){
+    const divPlayerChoice = document.createElement('div')
+    divPlayerChoice.textContent = `You picked : ${playerChoice}`
+    const divComputerChoice = document.createElement('div')
+    divComputerChoice.textContent = `, Computer picked : ${computerChoice}`
+    const divResult = document.createElement('div')
 
-function playRound(playerSelection, computerSelection){
-    let player = playerSelection.toLowerCase()
-
-
-    if (player == computerSelection){
-        draws++
-    }
-    else if(player == 'rock' && computerSelection == 'paper'){
-        pcwins++
-    }
-    else if(player == 'rock' && computerSelection == 'scissors'){
-        playerwins++
-    }
-    else if(player == 'paper' && computerSelection == 'rock'){
-        playerwins++
-    }
-    else if(player == 'paper' && computerSelection == 'scissors'){
-        pcwins++
-    }
-    else if(player == 'scissors' && computerSelection == 'paper'){
-        playerwins++
-    }
-    else if(player == 'scissors' && computerSelection == 'rock'){
-        pcwins++
-    }
+    const divResultBox = document.createElement('div')
 
 
-    
+    switch(result){
+        case 'win':
+            divResult.textContent = '. You WON!' 
+            playerPoints++
+            updatePoints()
+            break
+        case 'lost':
+            divResult.textContent = '. You LOST!' 
+            computerPoints++
+            updatePoints()
+            break
+        case 'draw':
+            divResult.textContent = '. You DREW!'
+            break
+
+
+
+
+
+    }
+    divResultBox.appendChild(divPlayerChoice)
+    divResultBox.appendChild(divComputerChoice)
+    divResultBox.appendChild(divResult)
+    divResultBox.classList.add('flexbox')
+    resultDiv.appendChild(divResultBox)
+
 }
 
-function game(){
-
-    for(let i = 0; i < 5; i++){
-        playerSelection = prompt("Your choice")
-        computerSelection = getComputerChoice()
-        playRound(playerSelection, computerSelection)
-        console.log(computerSelection)
+function checkIfFinished(){
+    if(playerPoints == 5){
+        showWinner('Player')
+        return(true)
     }
-    console.log(playerwins)
-    console.log(draws)
-    console.log(pcwins)
+    if(computerPoints == 5){
+        showWinner('Computer')
+        return(true)
+    }
+    return(false)
 }
-game()
+function initiateGame(){
+    const gameDiv = document.querySelector('.results')
+    gameDiv.textContent  = ''
+    playerPoints = 0
+    computerPoints = 0
+    updatePoints()
+    const winnerDiv = document.querySelector('.winner')
+    winnerDiv.textContent = ''
+
+}
+
+
+function showWinner(winner){
+    const gameDiv = document.querySelector('.results')
+    gameDiv.textContent  = ''
+    const winnerDiv = document.querySelector('.winner')
+    winnerDiv.textContent = `${winner} has won the game!`
+
+
+    const newGameButton = document.createElement('button')
+    newGameButton.innerText = 'RESTART'
+    newGameButton.style.margin = '20px'
+    winnerDiv.appendChild(newGameButton)
+    newGameButton.addEventListener('click', initiateGame)
+
+}
